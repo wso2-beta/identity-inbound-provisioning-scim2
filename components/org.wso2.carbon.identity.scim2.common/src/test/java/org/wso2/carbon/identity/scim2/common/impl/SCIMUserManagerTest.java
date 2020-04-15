@@ -52,9 +52,11 @@ import org.wso2.carbon.user.core.constants.UserCoreClaimConstants;
 import org.wso2.carbon.user.core.service.RealmService;
 import org.wso2.carbon.user.core.util.UserCoreUtil;
 import org.wso2.charon3.core.config.SCIMUserSchemaExtensionBuilder;
+import org.wso2.charon3.core.exceptions.BadRequestException;
 import org.wso2.charon3.core.exceptions.CharonException;
 import org.wso2.charon3.core.objects.Group;
 import org.wso2.charon3.core.objects.User;
+import org.wso2.charon3.core.protocol.ResponseCodeConstants;
 import org.wso2.charon3.core.schema.SCIMAttributeSchema;
 import org.wso2.charon3.core.schema.SCIMConstants;
 import org.wso2.charon3.core.utils.codeutils.ExpressionNode;
@@ -74,6 +76,7 @@ import static org.mockito.Matchers.anySet;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.MockitoAnnotations.initMocks;
+import static org.powermock.api.mockito.PowerMockito.doReturn;
 import static org.powermock.api.mockito.PowerMockito.mock;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
@@ -81,6 +84,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 import static org.testng.AssertJUnit.assertEquals;
 import static org.testng.AssertJUnit.assertNotNull;
+import static org.testng.AssertJUnit.assertTrue;
 
 /*
  * Unit tests for SCIMUserManager
@@ -543,6 +547,33 @@ public class SCIMUserManagerTest extends PowerMockTestCase {
                 {startsWithFilter, roles, attributes},
                 {equalsFilter, roles, attributes}
         };
+    }
+
+    @Test
+    public void testUpdateUserWithUsernameChange() throws Exception {
+
+        // When IS supports username change through SCIM user
+        // update this test will no longer be needed.
+
+        User oldUser = new User();
+        oldUser.setUserName("oldUser");
+
+        User newUser = new User();
+        newUser.setUserName("newUser");
+
+        SCIMUserManager scimUserManager = spy(new SCIMUserManager(mockedUserStoreManager, mockedClaimManager));
+        doReturn(oldUser).when(scimUserManager).getUser(anyString(), anyMap());
+
+        boolean hasExpectedBehaviour = false;
+        try {
+            scimUserManager.updateUser(newUser, null);
+        } catch (BadRequestException e) {
+            if (ResponseCodeConstants.MUTABILITY.equals(e.getScimType())) {
+                hasExpectedBehaviour = true;
+            }
+        }
+
+        assertTrue("UserName claim update is not properly handled.", hasExpectedBehaviour);
     }
 
     @ObjectFactory
