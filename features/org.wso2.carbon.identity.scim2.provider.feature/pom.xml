@@ -20,7 +20,7 @@
         <groupId>org.wso2.carbon.identity.inbound.provisioning.scim2</groupId>
         <artifactId>identity-inbound-provisioning-scim2</artifactId>
         <relativePath>../../pom.xml</relativePath>
-        <version>1.5.1.1-SNAPSHOT</version>
+        <version>1.5.1.1</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -133,9 +133,9 @@
                         <phase>install</phase>
                         <configuration>
                             <tasks>
-                                <delete dir="src/main/resources"/>
-                                <delete dir="src/main"/>
-                                <delete dir="src"/>
+                                <delete dir="src/main/resources" />
+                                <delete dir="src/main" />
+                                <delete dir="src" />
                             </tasks>
                         </configuration>
                         <goals>
